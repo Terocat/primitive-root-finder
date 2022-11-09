@@ -55,11 +55,38 @@ function isPrime(n : integer) : boolean;
 var
     i : integer;
 begin
+    if(n = 1) then
+        exit(false);
+
     for i := 2 to trunc(sqrt(n)) do
         if(n mod i = 0) then
             exit(false);
 
     exit(true);
+end;
+
+procedure disposeList(var list : ListFactor);
+var
+    probe : ListFactor;
+begin
+    while(list <> nil) do
+    begin   
+        probe := list;
+        dispose(probe);
+        list := list^.next;        
+    end;
+end;
+
+procedure disposeGroup(var G : Group);
+var
+    probe : Group;
+begin
+    while(G <> nil) do
+    begin   
+        probe := G;
+        dispose(probe);
+        G := G^.next;        
+    end;
 end;
 
 procedure addToList(var list : ListFactor; factor, exponent : integer);
@@ -83,7 +110,7 @@ begin
     G := ptr;
 end;
 
-function getPrimeDecom(n : integer) : ListFactor; // complicated function, read carefully
+function getPrimeDecomp(n : integer) : ListFactor; // complicated function, read carefully
 var
     i, multiplicity, remainder : integer;
     head : ListFactor;
@@ -114,7 +141,7 @@ begin
         end;
     end;
 
-    getPrimeDecom := head;
+    getPrimeDecomp := head;
 end;
 
 procedure printList(list : ListFactor);
@@ -162,6 +189,7 @@ var
     head : Group;
 begin
     head := nil;
+    addToGroup(head, g);
 
     h := g;
     while(h <> 1) do
@@ -171,6 +199,35 @@ begin
     end;
 
     getGeneratedG := head;
+end;
+
+function phi(n : integer) : integer;
+var
+    primes, probe : ListFactor;
+    res : integer;
+begin
+    res := 1;
+    primes := getPrimeDecomp(n);
+    probe := primes;
+
+    while(probe <> nil) do
+    begin   
+        res := res * power(probe^.value, probe^.exponent - 1) * (probe^.value - 1);
+        probe := probe^.next;
+    end;
+
+    phi := res;
+end;
+
+function containsElement(h : integer; G : Group) : boolean;
+var
+    probe : Group;
+begin
+    probe := G;
+    while((probe <> nil) and (probe^.value <> h)) do
+        probe := probe^.next;
+
+    containsElement := not (probe = nil);
 end;
 
 // given 2 natural numbers r and s, finds naturals a and b such that a | r , b | r
@@ -185,7 +242,7 @@ begin
     a := r div d;
     b := s div d;
 
-    dDecomp := getPrimeDecom(d);
+    dDecomp := getPrimeDecomp(d);
     probe := dDecomp;
     while(probe <> nil) do
     begin
