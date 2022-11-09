@@ -168,7 +168,7 @@ begin
     end;
 end;
 
-function o(g, m : integer) : integer;
+function o(g, m : integer) : integer; // returns order of element mod m
 var
     i, h : integer;
 begin
@@ -183,22 +183,21 @@ begin
     o := i;
 end;
 
-function getGeneratedG(g, m : integer) : Group;
+procedure getGeneratedG(g, m : integer; var count : integer; var head : Group);
 var
     h : integer;
-    head : Group;
 begin
     head := nil;
     addToGroup(head, g);
+    count := 1;
 
     h := g;
     while(h <> 1) do
     begin
         h := (h * g) mod m;
         addToGroup(head, h);
+        count := count + 1;
     end;
-
-    getGeneratedG := head;
 end;
 
 function phi(n : integer) : integer;
@@ -217,6 +216,7 @@ begin
     end;
 
     phi := res;
+    disposeList(primes);
 end;
 
 function containsElement(h : integer; G : Group) : boolean;
@@ -253,5 +253,30 @@ begin
 
         probe := probe^.next;
     end;
+
+    disposeList(dDecomp);
 end;
 
+function findRootOfPrime(p : integer) : integer;
+var
+    generatedG, probe : Group;
+    g, h, ordG, ordH, a, b : integer;
+begin
+    g := p - 1;
+
+    while(true) do
+    begin
+        getGeneratedG(g, p, ordG, generatedG);
+        probe := generatedG;
+        if(ordG = p - 1) then // g is primitive root
+            exit(g);
+
+        h := 2;
+        while((probe <> nil) and containsElement(h, generatedG)) do
+            h := (h + 1) mod p;
+        ordH := o(h, p);
+        findAandB(ordG, ordH, a, b); // mcm(ordG,ordH) = ab, a | ordG, b | ordH and mcd(a,b) = 1
+        g := (modularPower(g, ordG div a, p) * modularPower(h, ordH div b, p)) mod p; // ord of new g > ord old g
+        disposeGroup(generatedG);
+    end;
+end;

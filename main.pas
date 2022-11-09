@@ -12,10 +12,8 @@ begin
     {read(a);
     printList(getPrimeDecom(a));}
 
-    read(a, b, r);
-    gr := getGeneratedG(a, b);
-    printGroup(gr);
-    writeLn(containsElement(r,gr));
+    read(a);
+    writeLn(findRootOfPrime(a));
 end.
 
 {
@@ -24,6 +22,7 @@ end.
     x implement phi
     x create function to dispose a list and a group
     x create function to check if element is in group
+    - count elements in getGeneratedSubgroup
     - create findRoot function
 
 }
