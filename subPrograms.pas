@@ -73,6 +73,16 @@ begin
     list := ptr;
 end;
 
+procedure addToGroup(var G : Group; element : integer);
+var
+    ptr : Group;
+begin
+    new(ptr);
+    ptr^.value := element;
+    ptr^.next := G;
+    G := ptr;
+end;
+
 function getPrimeDecom(n : integer) : ListFactor; // complicated function, read carefully
 var
     i, multiplicity, remainder : integer;
@@ -119,6 +129,49 @@ begin
     end;
 end;
 
+procedure printGroup(G : Group);
+var
+    probe : Group;
+begin
+    probe := G;
+    while(probe <> nil) do
+    begin
+        write(probe^.value:0, ' ');
+        probe := probe^.next;
+    end;
+end;
+
+function o(g, m : integer) : integer;
+var
+    i, h : integer;
+begin
+    h := g;
+    i := 1;
+    while(h <> 1) do
+    begin
+        h := (h * g) mod m;
+        i := i + 1;
+    end;
+
+    o := i;
+end;
+
+function getGeneratedG(g, m : integer) : Group;
+var
+    h : integer;
+    head : Group;
+begin
+    head := nil;
+
+    h := g;
+    while(h <> 1) do
+    begin
+        h := (h * g) mod m;
+        addToGroup(head, h);
+    end;
+
+    getGeneratedG := head;
+end;
 
 // given 2 natural numbers r and s, finds naturals a and b such that a | r , b | r
 // mcd(a,b) = 1 and mcm(r,s) = ab
@@ -144,3 +197,4 @@ begin
         probe := probe^.next;
     end;
 end;
+

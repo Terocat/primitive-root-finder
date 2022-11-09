@@ -11,6 +11,15 @@ begin
     {read(a);
     printList(getPrimeDecom(a));}
 
-    read(a, b, r);
-    writeLn(modularPower(a,b, r));
+    read(a,b);
+    writeLn(o(a,b));
 end.
+
+{
+    TODO:
+
+    - create function to dispose a list and a group
+    - create function to check if element is in group
+    - create findRoot function
+
+}
